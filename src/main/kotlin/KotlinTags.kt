@@ -133,6 +133,7 @@ object KotlinTags {
     // add methods for the DSL for the rest of the tags (move some code around)
 
     // step 4. test that it works
+    // only expose the top-level DSL - just the HTML{} method needs to stay top level
     val exmapleHTML =
         html {
             head {
@@ -148,7 +149,6 @@ object KotlinTags {
                 }
             }
         }
-    // TODO only expose the top-level DSL - just the HTML{} method needs to stay top level
 
     @JvmStatic
     fun main(args: Array<String>) {
