@@ -1,3 +1,7 @@
+import java.io.File
+import java.io.FileWriter
+import java.io.PrintWriter
+
 object KotlinTags {
     /*
         HTML rendering library
@@ -116,5 +120,40 @@ object KotlinTags {
 
         // expose a "build" method to give me back the final data structure
         fun build() = Div(children, id, className)
+    }
+
+    // step 3. define methods that take lambdas with receivers as arguments => build the DSL
+    fun html(init: HTMLBuilder.() -> Unit): HTML {
+        val builder = HTMLBuilder()
+        builder.init()
+        return builder.build()
+
+    }
+
+    // add methods for the DSL for the rest of the tags (move some code around)
+
+    // step 4. test that it works
+    val exmapleHTML =
+        html {
+            head {
+                title("my web page")
+            }
+            body {
+                div(id = "header", className = "main-header") {
+                    p("welcome to my web site")
+                }
+                div {
+                    p("this is the start of my site")
+                    p("this was rendered with KotlinTags")
+                }
+            }
+        }
+    // TODO only expose the top-level DSL - just the HTML{} method needs to stay top level
+
+    @JvmStatic
+    fun main(args: Array<String>) {
+        val pw = PrintWriter(FileWriter(File("src/main/resources/sample.html")))
+        pw.println(exmapleHTML)
+        pw.close()
     }
 }
