@@ -56,4 +56,65 @@ object KotlinTags {
     data class P(val content: String) : HTMLElement {
         override fun toString(): String = "<p>$content</p>"
     }
+
+    // add builders for the rest of the tags: HTMLBuilder, HeadBuilder, BodyBuilder
+
+    // step 2. define some "builders" that enable the DSL for every tag we want to support
+    //          - HTMLBuilder, HeadBuilder, BodyBuilder, DivBuilder
+    class HTMLBuilder {
+        private lateinit var head: Head
+        private lateinit var body: Body
+
+        fun head(init: HeadBuilder.() -> Unit) {
+            val builder = HeadBuilder()
+            builder.init()
+            head = builder.build()
+        }
+
+        fun body(init: BodyBuilder.() -> Unit) {
+            val builder = BodyBuilder()
+            builder.init()
+            body = builder.build()
+        }
+
+        fun build(): HTML =
+            HTML(head, body)
+    }
+
+    class HeadBuilder {
+        private lateinit var title: Title
+
+        fun title(content: String) {
+            title = Title(content)
+        }
+
+        fun build(): Head = Head(title)
+    }
+
+    class BodyBuilder {
+        private val children = mutableListOf<HTMLElement>()
+
+        fun div(id: String? = null, className: String? = null, init: DivBuilder.() -> Unit) {
+            val builder = DivBuilder(id, className)
+            builder.init()
+            children.add(builder.build())
+        }
+
+        fun p(content: String) {
+            children.add(P(content))
+        }
+
+        fun build() =
+            Body(children)
+    }
+
+    class DivBuilder(val id: String?, val className: String?) {
+        private val children = mutableListOf<HTMLElement>()
+        fun p(content: String) {
+            children.add(P(content))
+        }
+
+        // expose a "build" method to give me back the final data structure
+        fun build() = Div(children, id, className)
+    }
 }
